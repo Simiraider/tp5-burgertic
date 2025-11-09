@@ -30,6 +30,11 @@ export class Usuario extends Model {
     }
 
     async comparePassword(password) {
-        return await bcrypt.compare(password, this.password);
+        try {
+            return await bcrypt.compare(password, this.password);
+        } catch (error) {
+            console.error('Error comparing passwords:', error);
+            return false;
+        }
     }
 }

@@ -10,27 +10,68 @@ const getPlatosByPedido = async (idPedido) => {
 };
 
 const getPedidos = async () => {
-    return await Pedido.findAll({
+    const pedidos = await Pedido.findAll({
         include: [
-            { model: Plato, through: { attributes: ['cantidad'] } }
+            { 
+                model: Plato, 
+                through: { attributes: ['cantidad'] },
+                attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
+            }
         ]
+    });
+    return pedidos.map(pedido => {
+        const pedidoJson = pedido.toJSON();
+        pedidoJson.platos = pedidoJson.platos.map(plato => ({
+            id: plato.id,
+            nombre: plato.nombre,
+            precio: plato.precio,
+            cantidad: plato.platosXpedidos?.cantidad || plato.platosxpedidos?.cantidad || 1
+        }));
+        return pedidoJson;
     });
 };
 
 const getPedidoById = async (id) => {
-    return await Pedido.findByPk(id, {
+    const pedido = await Pedido.findByPk(id, {
         include: [
-            { model: Plato, through: { attributes: ['cantidad'] } }
+            { 
+                model: Plato, 
+                through: { attributes: ['cantidad'] },
+                attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
+            }
         ]
     });
+    if (!pedido) return null;
+    const pedidoJson = pedido.toJSON();
+    pedidoJson.platos = pedidoJson.platos.map(plato => ({
+        id: plato.id,
+        nombre: plato.nombre,
+        precio: plato.precio,
+        cantidad: plato.platosXpedidos?.cantidad || plato.platosxpedidos?.cantidad || 1
+    }));
+    return pedidoJson;
 };
 
 const getPedidosByUser = async (idUsuario) => {
-    return await Pedido.findAll({
+    const pedidos = await Pedido.findAll({
         where: { id_usuario: idUsuario },
         include: [
-            { model: Plato, through: { attributes: ['cantidad'] } }
+            { 
+                model: Plato, 
+                through: { attributes: ['cantidad'] },
+                attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
+            }
         ]
+    });
+    return pedidos.map(pedido => {
+        const pedidoJson = pedido.toJSON();
+        pedidoJson.platos = pedidoJson.platos.map(plato => ({
+            id: plato.id,
+            nombre: plato.nombre,
+            precio: plato.precio,
+            cantidad: plato.platosXPedidos?.cantidad || plato.platosxpedidos?.cantidad || 1
+        }));
+        return pedidoJson;
     });
 };
 

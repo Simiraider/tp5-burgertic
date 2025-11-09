@@ -1,7 +1,5 @@
-// Configuración de la API
-const API_BASE_URL = 'http://localhost:9000'; // Asegúrate de que este puerto coincida con tu backend
+const API_BASE_URL = 'http://localhost:9000';
 
-// Variables globales
 let currentUser = null;
 let cart = [];
 let currentSection = 'home';
@@ -115,6 +113,7 @@ async function handleRegister(e) {
     };
 
     try {
+        console.log('Enviando datos de registro:', usuario);
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -144,7 +143,7 @@ function checkAuthStatus() {
     }
 
     fetch(`${API_BASE_URL}/auth/verify`, {
-        headers: { 'Authorization': token }
+        headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
         if (!response.ok) throw new Error('Token inválido');
@@ -371,6 +370,12 @@ function showCreatePlatoForm() {
 
 async function handleCreatePlato(e) {
     e.preventDefault();
+    
+    if (!currentUser?.admin) {
+        showMessage('Solo los administradores pueden crear platos', 'error');
+        return;
+    }
+
     const formData = new FormData(e.target);
     const plato = {
         nombre: formData.get('nombre'),
@@ -380,11 +385,17 @@ async function handleCreatePlato(e) {
     };
 
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showMessage('Debe iniciar sesión para crear platos', 'error');
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/platos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(plato)
         });
@@ -392,7 +403,7 @@ async function handleCreatePlato(e) {
         const data = await response.json();
 
         if (!response.ok) {
-            showMessage(data.message, 'error');
+            showMessage(data.message || 'Error al crear el plato', 'error');
             return;
         }
 
@@ -401,7 +412,8 @@ async function handleCreatePlato(e) {
         loadPlatosAdmin();
         loadPlatos();
     } catch (error) {
-        showMessage('Error al crear el plato', 'error');
+        console.error('Error al crear plato:', error);
+        showMessage('Error al crear el plato: ' + error.message, 'error');
     }
 }
 
@@ -438,6 +450,12 @@ async function editPlato(id) {
 
 async function handleEditPlato(e, id) {
     e.preventDefault();
+    
+    if (!currentUser?.admin) {
+        showMessage('Solo los administradores pueden editar platos', 'error');
+        return;
+    }
+
     const formData = new FormData(e.target);
     const plato = {
         nombre: formData.get('nombre'),
@@ -447,11 +465,17 @@ async function handleEditPlato(e, id) {
     };
 
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showMessage('Debe iniciar sesión para editar platos', 'error');
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/platos/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(plato)
         });
@@ -459,7 +483,7 @@ async function handleEditPlato(e, id) {
         const data = await response.json();
 
         if (!response.ok) {
-            showMessage(data.message, 'error');
+            showMessage(data.message || 'Error al actualizar el plato', 'error');
             return;
         }
 
@@ -468,25 +492,37 @@ async function handleEditPlato(e, id) {
         loadPlatosAdmin();
         loadPlatos();
     } catch (error) {
-        showMessage('Error al actualizar el plato', 'error');
+        console.error('Error al actualizar plato:', error);
+        showMessage('Error al actualizar el plato: ' + error.message, 'error');
     }
 }
 
 async function deletePlato(id) {
+    if (!currentUser?.admin) {
+        showMessage('Solo los administradores pueden eliminar platos', 'error');
+        return;
+    }
+
     if (!confirm('¿Está seguro de que desea eliminar este plato?')) return;
 
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showMessage('Debe iniciar sesión para eliminar platos', 'error');
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/platos/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${token}`
             }
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            showMessage(data.message, 'error');
+            showMessage(data.message || 'Error al eliminar el plato', 'error');
             return;
         }
 
@@ -494,7 +530,8 @@ async function deletePlato(id) {
         loadPlatosAdmin();
         loadPlatos();
     } catch (error) {
-        showMessage('Error al eliminar el plato', 'error');
+        console.error('Error al eliminar plato:', error);
+        showMessage('Error al eliminar el plato: ' + error.message, 'error');
     }
 }
 
@@ -513,7 +550,7 @@ async function loadPedidos() {
 
         const response = await fetch(url, {
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
 
@@ -561,7 +598,7 @@ async function cambiarEstadoPedido(id, accion) {
         const response = await fetch(`${API_BASE_URL}/pedidos/${id}/${accion}`, {
             method: 'PUT',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
 
@@ -586,7 +623,7 @@ async function deletePedido(id) {
         const response = await fetch(`${API_BASE_URL}/pedidos/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
 
@@ -685,7 +722,7 @@ async function handleCheckout() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
                 platos: cart.map(item => ({
@@ -713,7 +750,25 @@ async function handleCheckout() {
     }
 }
 
-// Utilidades
+function switchAuthTab(tab) {
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    if (tab === 'login') {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+    } else {
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+        loginForm.classList.remove('active');
+        registerForm.classList.add('active');
+    }
+}
+
 function showMessage(message, type) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;

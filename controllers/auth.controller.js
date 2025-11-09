@@ -40,10 +40,22 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Credenciales inválidas" });
         }
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30m' });
-        res.json({ usuario: { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email }, token });
+        res.json({ usuario: { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, admin: user.admin }, token });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-export default { register, login };
+const verify = async (req, res) => {
+    try {
+        const user = await Usuario.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+        res.json({ usuario: { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, admin: user.admin } });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export default { register, login, verify };
