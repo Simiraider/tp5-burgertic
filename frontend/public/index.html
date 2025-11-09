@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wok & Bun - Hamburguesas Premium</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Wok & Bun</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Inicio</a></li>
+                <li><a href="#menu">Menú</a></li>
+                <li><a href="#login">Iniciar Sesión</a></li>
+                <li><a href="#admin" id="admin-link" style="display: none;">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h2>Las Mejores Hamburguesas estilo Japonesas</h2>
+                <p>Disfruta de sabores únicos con ingredientes de primera calidad</p>
+                <button id="order-btn">Ver Menú</button>
+            </div>
+        </section>
+
+        <section id="menu" class="menu">
+            <h2>Nuestro Menú</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-type="all">Todos</button>
+                <button class="filter-btn" data-type="principal">Principales</button>
+                <button class="filter-btn" data-type="combo">Combos</button>
+                <button class="filter-btn" data-type="postre">Postres</button>
+            </div>
+            <div id="menu-container" class="menu-container">
+                <!-- Los platos se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+
+        <section id="login" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" id="login-tab">Iniciar Sesión</button>
+                    <button class="tab-btn" id="register-tab">Registrarse</button>
+                </div>
+                <div id="auth-forms">
+                    <form id="login-form" class="auth-form active">
+                        <h3>Iniciar Sesión</h3>
+                        <input type="email" id="login-email" placeholder="Email" required>
+                        <input type="password" id="login-password" placeholder="Contraseña" required>
+                        <button type="submit">Iniciar Sesión</button>
+                    </form>
+                    <form id="register-form" class="auth-form">
+                        <h3>Registrarse</h3>
+                        <input type="text" id="register-nombre" placeholder="Nombre" required>
+                        <input type="text" id="register-apellido" placeholder="Apellido" required>
+                        <input type="email" id="register-email" placeholder="Email" required>
+                        <input type="password" id="register-password" placeholder="Contraseña" required>
+                        <button type="submit">Registrarse</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin" class="admin-section" style="display: none;">
+            <h2>Panel de Administración</h2>
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-section="platos">Gestionar Platos</button>
+                <button class="admin-tab-btn" data-section="pedidos">Ver Pedidos</button>
+            </div>
+            <div id="admin-content">
+                <!-- Contenido del admin se cargará aquí -->
+            </div>
+        </section>
+
+        <section id="pedidos" class="pedidos-section" style="display: none;">
+            <h2>Mis Pedidos</h2>
+            <div id="pedidos-container">
+                <!-- Los pedidos se cargarán aquí -->
+            </div>
+        </section>
+
+        <section id="detalle-plato" class="detalle-section" style="display: none;">
+            <div class="detalle-container">
+                <button id="back-btn">← Volver</button>
+                <div id="plato-detalle">
+                    <!-- Detalle del plato se cargará aquí -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Carrito de Compras</h3>
+            <div id="cart-items"></div>
+            <button id="checkout-btn">Realizar Pedido</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

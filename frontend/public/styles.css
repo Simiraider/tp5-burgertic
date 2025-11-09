@@ -1,0 +1,623 @@
+/* Reset y variables */
+:root {
+    --primary-color: #d4af37;
+    --secondary-color: #8b4513;
+    --accent-color: #daa520;
+    --dark-color: #2c1810;
+    --light-color: #f5f5dc;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-color);
+    background-color: var(--light-color);
+}
+
+/* Header */
+header {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li {
+    margin-left: 2rem;
+}
+
+.nav-links a {
+    color: var(--light-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+.hero {
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.hero-content button {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.hero-content button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Secciones */
+section {
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--dark-color);
+}
+
+/* Menú */
+.menu {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.filter-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.filter-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+}
+
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.plato-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.plato-card:hover {
+    transform: translateY(-5px);
+}
+
+.plato-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.plato-info {
+    padding: 1rem;
+}
+
+.plato-info h3 {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.plato-info p {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.plato-info .precio {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.plato-card button {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.plato-card button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Auth Section */
+.auth-section {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 3rem 2rem;
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 2rem;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.tab-btn {
+    flex: 1;
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px 0 0 5px;
+}
+
+.tab-btn:last-child {
+    border-radius: 0 5px 5px 0;
+    border-left: none;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-form h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+}
+
+.auth-form button {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+    border: none;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.auth-form button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Admin Section */
+.admin-section {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.admin-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.admin-tab-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.admin-tab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+}
+
+.admin-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.admin-form textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.admin-form button {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-right: 1rem;
+    transition: background-color 0.3s;
+}
+
+.admin-form button:hover {
+    background-color: var(--accent-color);
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.action-btn {
+    background-color: var(--error-color);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.edit-btn {
+    background-color: var(--primary-color);
+}
+
+/* Pedidos Section */
+.pedidos-section {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.pedido-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pedido-card h4 {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.pedido-card p {
+    margin-bottom: 0.25rem;
+}
+
+.estado {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    color: white;
+}
+
+.estado.pendiente {
+    background-color: #ffc107;
+}
+
+.estado.aceptado {
+    background-color: #17a2b8;
+}
+
+.estado.en-camino {
+    background-color: #fd7e14;
+}
+
+.estado.entregado {
+    background-color: var(--success-color);
+}
+
+/* Detalle Section */
+.detalle-section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.detalle-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#back-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+}
+
+.plato-detalle {
+    display: flex;
+    gap: 2rem;
+}
+
+.plato-detalle img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.plato-detalle-info h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.plato-detalle-info .precio {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.plato-detalle-info p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.add-to-cart-btn {
+    background-color: var(--primary-color);
+    color: var(--dark-color);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--accent-color);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item-info h4 {
+    margin-bottom: 0.25rem;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart-item-controls button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#checkout-btn {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 1rem;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .hero-content h2 {
+        font-size: 2rem;
+    }
+
+    .menu-container {
+        grid-template-columns: 1fr;
+    }
+
+    .plato-detalle {
+        flex-direction: column;
+    }
+
+    .plato-detalle img {
+        width: 100%;
+        height: 250px;
+    }
+}
+
+/* Mensajes */
+.message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 5px;
+    color: white;
+    z-index: 1001;
+    display: none;
+}
+
+.message.success {
+    background-color: var(--success-color);
+}
+
+.message.error {
+    background-color: var(--error-color);
+}

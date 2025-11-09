@@ -1,0 +1,18 @@
+{
+  "name": "burgertic-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for BurgerTIC restaurant",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npx nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}
