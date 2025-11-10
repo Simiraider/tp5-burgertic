@@ -1,9 +1,12 @@
 :root {
-    --primary-color: #d4af37;
-    --secondary-color: #8b4513;
-    --accent-color: #daa520;
-    --dark-color: #2c1810;
-    --light-color: #f5f5dc;
+    /* Paleta de colores cálidos y naturales */
+    --primary-color: #EFD780;      /* Flax - Amarillo dorado para botones principales */
+    --secondary-color: #DBA159;    /* Earth yellow - Ocre para elementos secundarios */
+    --accent-color: #FCFDAF;       /* Mindaro - Amarillo suave para hovers y acentos */
+    --background-light: #F7FFDD;   /* Light yellow - Amarillo muy claro para fondos */
+    --background-soft: #D0E3CC;    /* Nyanza - Verde claro/mint para fondos suaves */
+    --dark-color: #3d2817;         /* Marrón oscuro cálido para texto */
+    --light-color: #F7FFDD;        /* Light yellow - Para fondos */
     --error-color: #dc3545;
     --success-color: #28a745;
 }
@@ -18,18 +21,20 @@ body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
     color: var(--dark-color);
-    background-color: var(--light-color);
+    background: linear-gradient(135deg, var(--background-light) 0%, var(--background-soft) 100%);
+    min-height: 100vh;
 }
 
 /* Header */
 header {
-    background-color: var(--dark-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: var(--light-color);
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 nav {
@@ -55,6 +60,7 @@ nav {
 .logo h1 {
     font-size: 2rem;
     color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
 .nav-links {
@@ -74,7 +80,9 @@ nav {
 }
 
 .nav-links a:hover {
-    color: var(--primary-color);
+    color: var(--accent-color);
+    transform: translateY(-2px);
+    transition: all 0.3s;
 }
 
 /* Hero Section */
@@ -101,18 +109,22 @@ nav {
 }
 
 .hero-content button {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--dark-color);
     border: none;
     padding: 1rem 2rem;
     font-size: 1.2rem;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 25px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-weight: bold;
 }
 
 .hero-content button:hover {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* Secciones */
@@ -130,10 +142,11 @@ h2 {
 
 /* Menú */
 .menu {
-    background-color: white;
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, var(--background-light) 100%);
+    border-radius: 15px;
     padding: 2rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(219, 161, 89, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .filter-buttons {
@@ -144,18 +157,25 @@ h2 {
 }
 
 .filter-btn {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .filter-btn.active {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
     color: var(--dark-color);
+    box-shadow: 0 4px 15px rgba(239, 215, 128, 0.4);
 }
 
 .menu-container {
@@ -165,15 +185,18 @@ h2 {
 }
 
 .plato-card {
-    background-color: white;
-    border-radius: 10px;
+    background: linear-gradient(135deg, white 0%, var(--background-light) 100%);
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
+    box-shadow: 0 5px 20px rgba(219, 161, 89, 0.15);
+    transition: all 0.3s;
+    border: 2px solid transparent;
 }
 
 .plato-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(219, 161, 89, 0.3);
+    border-color: var(--primary-color);
 }
 
 .plato-card img {
@@ -203,33 +226,39 @@ h2 {
 }
 
 .plato-card button {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--dark-color);
     border: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 20px;
     margin: 0.5rem;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    font-weight: 600;
 }
 
 .plato-card button:hover {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* Auth Section */
 .auth-section {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
     padding: 3rem 2rem;
+    border-radius: 15px;
 }
 
 .auth-container {
     max-width: 400px;
     margin: 0 auto;
-    background-color: rgba(255,255,255,0.1);
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+    border-radius: 15px;
     padding: 2rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
 .auth-tabs {
@@ -299,26 +328,30 @@ h2 {
 
 .auth-form button {
     width: 100%;
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
     color: var(--dark-color);
     border: none;
     padding: 0.75rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 25px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .auth-form button:hover {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* Admin Section */
 .admin-section {
-    background-color: white;
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, var(--background-light) 100%);
+    border-radius: 15px;
     padding: 2rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(219, 161, 89, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .admin-tabs {
@@ -329,18 +362,25 @@ h2 {
 }
 
 .admin-tab-btn {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.admin-tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .admin-tab-btn.active {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
     color: var(--dark-color);
+    box-shadow: 0 4px 15px rgba(239, 215, 128, 0.4);
 }
 
 .admin-form {
@@ -364,19 +404,22 @@ h2 {
 }
 
 .admin-form button {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--dark-color);
     border: none;
     padding: 0.75rem 1.5rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 25px;
     font-weight: bold;
     margin-right: 1rem;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .admin-form button:hover {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
 
 .table-container {
@@ -396,42 +439,65 @@ th, td {
 }
 
 th {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
+    font-weight: 600;
 }
 
 tr:hover {
-    background-color: #f5f5f5;
+    background-color: var(--background-light);
+    transition: background-color 0.3s;
 }
 
 .action-btn {
-    background-color: var(--error-color);
+    background: linear-gradient(135deg, var(--error-color) 0%, #c82333 100%);
     color: white;
     border: none;
-    padding: 0.25rem 0.5rem;
+    padding: 0.4rem 0.8rem;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 15px;
     margin-right: 0.5rem;
     font-size: 0.8rem;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
 }
 
 .edit-btn {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: var(--dark-color);
+}
+
+.edit-btn:hover {
+    box-shadow: 0 4px 10px rgba(239, 215, 128, 0.4);
 }
 
 /* Pedidos Section */
 .pedidos-section {
-    background-color: white;
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, var(--background-light) 100%);
+    border-radius: 15px;
     padding: 2rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(219, 161, 89, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .pedido-card {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 1rem;
+    border: 2px solid var(--background-soft);
+    border-radius: 15px;
+    padding: 1.5rem;
     margin-bottom: 1rem;
+    background: linear-gradient(135deg, white 0%, var(--background-light) 100%);
+    transition: all 0.3s;
+}
+
+.pedido-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(239, 215, 128, 0.2);
+    transform: translateX(5px);
 }
 
 .pedido-card h4 {
@@ -480,13 +546,20 @@ tr:hover {
 }
 
 #back-btn {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 20px;
     margin-bottom: 2rem;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+#back-btn:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .plato-detalle {
@@ -519,18 +592,22 @@ tr:hover {
 }
 
 .add-to-cart-btn {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--dark-color);
     border: none;
     padding: 1rem 2rem;
     font-size: 1.2rem;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 25px;
+    transition: all 0.3s;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .add-to-cart-btn:hover {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* Modal */
@@ -546,12 +623,14 @@ tr:hover {
 }
 
 .modal-content {
-    background-color: white;
+    background: linear-gradient(135deg, white 0%, var(--background-light) 100%);
     margin: 15% auto;
     padding: 2rem;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 80%;
     max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    border: 2px solid var(--primary-color);
 }
 
 .close {
@@ -586,25 +665,40 @@ tr:hover {
 }
 
 .cart-item-controls button {
-    background-color: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-color) 100%);
     color: white;
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     cursor: pointer;
     border-radius: 50%;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.cart-item-controls button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 #checkout-btn {
-    background-color: var(--success-color);
+    background: linear-gradient(135deg, var(--success-color) 0%, #218838 100%);
     color: white;
     border: none;
     padding: 1rem;
     width: 100%;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 25px;
     font-size: 1.1rem;
     margin-top: 1rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+#checkout-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
 
 /* Responsive */

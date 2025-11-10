@@ -2,20 +2,26 @@ import { Plato } from "../models/platos.model.js";
 
 const getPlatos = async () => await Plato.findAll();
 
-const getPlatoById = async (id) =>
-    await Plato.findAll({
-        where: {
-            id: id,
-        },
-    });
+const getPlatoById = async (id) => {
+    const plato = await Plato.findByPk(id);
+    return plato;
+};
 
-const createPlato = async (plato) =>
-    Plato.create({
-        tipo: plato.tipo,
-        nombre: plato.nombre,
-        precio: plato.precio,
-        descripcion: plato.descripcion,
-    });
+const createPlato = async (plato) => {
+    try {
+        const nuevoPlato = await Plato.create({
+            tipo: plato.tipo,
+            nombre: plato.nombre,
+            precio: plato.precio,
+            descripcion: plato.descripcion,
+        });
+        console.log("✓ Plato creado en la base de datos:", nuevoPlato.toJSON());
+        return nuevoPlato;
+    } catch (error) {
+        console.error("✗ Error al crear plato en la base de datos:", error);
+        throw error;
+    }
+};
 
 const updatePlato = async (id, newData) => {
     const plato = await Plato.findByPk(id);

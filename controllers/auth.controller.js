@@ -12,13 +12,14 @@ const register = async (req, res) => {
             return res.status(400).json({ message: "El email ya está registrado" });
         }
         const hashedPassword = await Usuario.hashPassword(usuario.password);
-        await Usuario.create({
+        const nuevoUsuario = await Usuario.create({
             nombre: usuario.nombre,
             apellido: usuario.apellido,
             email: usuario.email,
             password: hashedPassword,
             admin: false
         });
+        console.log("✓ Usuario creado en la base de datos:", nuevoUsuario.toJSON());
         res.status(201).json({ message: "Usuario registrado con éxito" });
     } catch (error) {
         res.status(500).json({ message: error.message });

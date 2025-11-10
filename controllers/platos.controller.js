@@ -34,10 +34,12 @@ const createPlato = async (req, res) => {
         return res.status(400).json({ message: "Faltan campos por llenar" });
 
     try {
-        await PlatosService.createPlato(plato);
-        res.json({ message: "Plato creado con éxito" });
+        const nuevoPlato = await PlatosService.createPlato(plato);
+        console.log("✓ Controller: Plato creado exitosamente, ID:", nuevoPlato.id);
+        res.json({ message: "Plato creado con éxito", plato: nuevoPlato });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("✗ Controller: Error al crear plato:", error);
+        res.status(500).json({ message: error.message || "Error al crear el plato" });
     }
 };
 

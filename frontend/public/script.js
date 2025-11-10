@@ -5,7 +5,6 @@ let cart = [];
 let currentSection = 'home';
 let platos = [];
 
-// Elementos del DOM
 const navLinks = document.querySelectorAll('.nav-links a');
 const sections = document.querySelectorAll('main > section');
 const loginTab = document.getElementById('login-tab');
@@ -21,7 +20,6 @@ const cartModal = document.getElementById('cart-modal');
 const cartItems = document.getElementById('cart-items');
 const checkoutBtn = document.getElementById('checkout-btn');
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     loadPlatos();
@@ -29,9 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAdminPanel();
 });
 
-// Configurar event listeners
 function setupEventListeners() {
-    // Navegación
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -40,40 +36,37 @@ function setupEventListeners() {
         });
     });
 
-    // Botón de orden
     document.getElementById('order-btn').addEventListener('click', () => {
         showSection('menu');
     });
 
-    // Tabs de autenticación
     loginTab.addEventListener('click', () => switchAuthTab('login'));
     registerTab.addEventListener('click', () => switchAuthTab('register'));
 
-    // Formularios de autenticación
     loginForm.addEventListener('submit', handleLogin);
     registerForm.addEventListener('submit', handleRegister);
+    
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', handleLogout);
+    }
 
-    // Filtros de menú
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => filterPlatos(btn.dataset.type));
     });
 
-    // Modal del carrito
     document.querySelector('.close').addEventListener('click', () => {
         cartModal.style.display = 'none';
     });
 
-    // Carrito de compras
     document.getElementById('cart-btn').addEventListener('click', () => {
         cartModal.style.display = 'block';
         updateCartUI();
     });
 
-    // Checkout
     checkoutBtn.addEventListener('click', handleCheckout);
 }
 
-// Funciones de autenticación
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -160,21 +153,35 @@ function checkAuthStatus() {
     });
 }
 
+function handleLogout(e) {
+    e.preventDefault();
+    localStorage.removeItem('token');
+    currentUser = null;
+    cart = [];
+    updateUIForUser();
+    showMessage('Sesión cerrada exitosamente', 'success');
+    showSection('home');
+}
+
 function updateUIForUser() {
+    const authNavItem = document.getElementById('auth-nav-item');
+    const logoutNavItem = document.getElementById('logout-nav-item');
+    
     if (currentUser) {
-        document.querySelector('.nav-links li:nth-child(3)').innerHTML = 
-            `<a href="#pedidos">Mis Pedidos</a>`;
+        authNavItem.innerHTML = `<a href="#pedidos">Mis Pedidos</a>`;
+        logoutNavItem.style.display = 'block';
         if (currentUser.admin) {
             adminLink.style.display = 'block';
+        } else {
+            adminLink.style.display = 'none';
         }
     } else {
-        document.querySelector('.nav-links li:nth-child(3)').innerHTML = 
-            `<a href="#login">Iniciar Sesión</a>`;
+        authNavItem.innerHTML = `<a href="#login">Iniciar Sesión</a>`;
+        logoutNavItem.style.display = 'none';
         adminLink.style.display = 'none';
     }
 }
 
-// Funciones de UI
 function showSection(sectionId) {
     sections.forEach(section => {
         section.style.display = 'none';
@@ -183,13 +190,13 @@ function showSection(sectionId) {
     currentSection = sectionId;
 
     if (sectionId === 'admin') {
+        setupAdminPanel();
         loadAdminData();
     } else if (sectionId === 'pedidos') {
         loadPedidos();
     }
 }
 
-// Funciones de platos
 async function loadPlatos() {
     try {
         const response = await fetch(`${API_BASE_URL}/platos`);
@@ -269,7 +276,6 @@ async function showPlatoDetail(id) {
     }
 }
 
-// Funciones de administración
 function setupAdminPanel() {
     const adminContent = document.getElementById('admin-content');
     if (!adminContent) return;
@@ -293,10 +299,29 @@ function setupAdminPanel() {
     });
 }
 
+function switchAdminTab(section) {
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === section);
+    });
+    
+    const platosAdmin = document.getElementById('platos-admin');
+    const pedidosAdmin = document.getElementById('pedidos-admin');
+    
+    if (section === 'platos') {
+        if (platosAdmin) platosAdmin.style.display = 'block';
+        if (pedidosAdmin) pedidosAdmin.style.display = 'none';
+        loadPlatosAdmin();
+    } else if (section === 'pedidos') {
+        if (platosAdmin) platosAdmin.style.display = 'none';
+        if (pedidosAdmin) pedidosAdmin.style.display = 'block';
+        loadPedidosAdmin();
+    }
+}
+
 async function loadAdminData() {
     if (!currentUser?.admin) return;
 
-    const activeTab = document.querySelector('.admin-tab-btn.active').dataset.section;
+    const activeTab = document.querySelector('.admin-tab-btn.active')?.dataset.section || 'platos';
     if (activeTab === 'platos') {
         await loadPlatosAdmin();
     } else {
@@ -307,9 +332,25 @@ async function loadAdminData() {
 async function loadPlatosAdmin() {
     try {
         const response = await fetch(`${API_BASE_URL}/platos`);
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
         const platos = await response.json();
         
         const platosList = document.getElementById('platos-list');
+        if (!platosList) {
+            console.error('Elemento platos-list no encontrado');
+            showMessage('Error: elemento no encontrado. Recargando panel...', 'error');
+            setupAdminPanel();
+            setTimeout(() => loadPlatosAdmin(), 100);
+            return;
+        }
+        
+        if (!Array.isArray(platos) || platos.length === 0) {
+            platosList.innerHTML = '<p>No hay platos registrados. Crea uno nuevo para comenzar.</p>';
+            return;
+        }
+        
         platosList.innerHTML = `
             <table>
                 <thead>
@@ -336,7 +377,82 @@ async function loadPlatosAdmin() {
             </table>
         `;
     } catch (error) {
-        showMessage('Error al cargar los platos', 'error');
+        console.error('Error al cargar platos:', error);
+        showMessage('Error al cargar los platos: ' + error.message, 'error');
+    }
+}
+
+async function loadPedidosAdmin() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showMessage('Debe iniciar sesión para ver los pedidos', 'error');
+            return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/pedidos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const pedidos = await response.json();
+        const pedidosList = document.getElementById('pedidos-list');
+        
+        if (!pedidosList) {
+            console.error('Elemento pedidos-list no encontrado');
+            return;
+        }
+
+        if (!Array.isArray(pedidos) || pedidos.length === 0) {
+            pedidosList.innerHTML = '<p>No hay pedidos registrados.</p>';
+            return;
+        }
+
+        pedidosList.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Platos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pedidos.map(pedido => `
+                        <tr>
+                            <td>${pedido.id}</td>
+                            <td>${pedido.id_usuario}</td>
+                            <td>${new Date(pedido.fecha).toLocaleDateString()}</td>
+                            <td>${pedido.estado}</td>
+                            <td>${pedido.platos ? pedido.platos.length : 0} plato(s)</td>
+                            <td>
+                                ${pedido.estado === 'pendiente' ? `
+                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'aceptar')" class="action-btn">Aceptar</button>
+                                ` : ''}
+                                ${pedido.estado === 'aceptado' ? `
+                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'comenzar')" class="action-btn">Comenzar</button>
+                                ` : ''}
+                                ${pedido.estado === 'en camino' ? `
+                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'entregar')" class="action-btn">Entregar</button>
+                                ` : ''}
+                                <button onclick="deletePedido(${pedido.id})" class="action-btn">Eliminar</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+        showMessage('Error al cargar los pedidos: ' + error.message, 'error');
     }
 }
 
@@ -535,7 +651,6 @@ async function deletePlato(id) {
     }
 }
 
-// Funciones de pedidos
 async function loadPedidos() {
     if (!currentUser) {
         showMessage('Debe iniciar sesión para ver los pedidos', 'error');
@@ -641,7 +756,6 @@ async function deletePedido(id) {
     }
 }
 
-// Funciones del carrito
 function addToCart(platoId) {
     if (!currentUser) {
         showMessage('Debe iniciar sesión para agregar al carrito', 'error');
@@ -777,3 +891,12 @@ function showMessage(message, type) {
     messageDiv.style.display = 'block';
     setTimeout(() => messageDiv.remove(), 3000);
 }
+
+window.editPlato = editPlato;
+window.deletePlato = deletePlato;
+window.showCreatePlatoForm = showCreatePlatoForm;
+window.addToCart = addToCart;
+window.showPlatoDetail = showPlatoDetail;
+window.updateCartItemQuantity = updateCartItemQuantity;
+window.cambiarEstadoPedido = cambiarEstadoPedido;
+window.deletePedido = deletePedido;
