@@ -46,46 +46,68 @@ import { Usuario, usuarioSchema } from "./models/usuarios.model.js";
 import { Plato, platoSchema } from "./models/platos.model.js";
 import { Pedido, pedidoSchema } from "./models/pedidos.model.js";
 import { PlatoXPedido, platoXPedidoSchema } from "./models/platosXpedidos.model.js";
+
 const initModels = async () => {
     Usuario.init(usuarioSchema, {
         sequelize,
         modelName: "usuarios",
         timestamps: false,
+        tableName: 'usuarios',
+        underscored: true
     });
 
     Plato.init(platoSchema, {
         sequelize,
         modelName: "platos",
         timestamps: false,
+        tableName: 'platos',
+        underscored: true
     });
 
     Pedido.init(pedidoSchema, {
         sequelize,
         modelName: "pedidos",
         timestamps: false,
+        tableName: 'pedidos',
+        underscored: true
     });
 
     PlatoXPedido.init(platoXPedidoSchema, {
         sequelize,
         modelName: "platosXpedidos",
         timestamps: false,
+        tableName: 'platosxpedidos',
+        underscored: true
     });
 
-    Usuario.hasMany(Pedido, { foreignKey: 'id_usuario' });
-    Pedido.belongsTo(Usuario, { foreignKey: 'id_usuario' });
+    Usuario.hasMany(Pedido, { 
+        foreignKey: 'id_usuario',
+        as: 'pedidos'
+    });
+    
+    Pedido.belongsTo(Usuario, { 
+        foreignKey: 'id_usuario',
+        as: 'usuario'
+    });
 
-    Pedido.belongsToMany(Plato, { through: PlatoXPedido, foreignKey: 'id_pedido' });
-    Plato.belongsToMany(Pedido, { through: PlatoXPedido, foreignKey: 'id_plato' });
+    Pedido.belongsToMany(Plato, { 
+        through: PlatoXPedido, 
+        foreignKey: 'id_pedido',
+        as: 'platos'
+    });
+    
+    Plato.belongsToMany(Pedido, { 
+        through: PlatoXPedido, 
+        foreignKey: 'id_plato',
+        as: 'pedidos'
+    });
 
     try {
-        await Usuario.findOne({ limit: 1 });
-        await Plato.findOne({ limit: 1 });
-        await Pedido.findOne({ limit: 1 });
-        await PlatoXPedido.findOne({ limit: 1 });
-        console.log("✓ Todas las tablas existen y son accesibles");
+        await sequelize.sync({ force: false, alter: true });
+        console.log("✓ Modelos sincronizados con la base de datos");
     } catch (error) {
-        console.error("✗ Error: Las tablas no existen o no son accesibles:", error.message);
-        throw new Error("Las tablas de la base de datos no existen. Por favor, créalas manualmente.");
+        console.error("✗ Error al sincronizar modelos con la base de datos:", error);
+        throw error;
     }
 };
 
