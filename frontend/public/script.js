@@ -1,10 +1,11 @@
 const API_BASE_URL = 'http://localhost:9000';
 
 let currentUser = null;
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let currentSection = 'home';
 let platos = [];
 
+// DOM Elements - Navigation and Authentication
 const navLinks = document.querySelectorAll('.nav-links a');
 const sections = document.querySelectorAll('main > section');
 const loginTab = document.getElementById('login-tab');
@@ -16,18 +17,43 @@ const adminLink = document.getElementById('admin-link');
 const adminSection = document.getElementById('admin');
 const pedidosSection = document.getElementById('pedidos');
 const detalleSection = document.getElementById('detalle-plato');
+
+// Cart and Order Elements
 const cartModal = document.getElementById('cart-modal');
+const cartSidebar = document.getElementById('cart-sidebar');
 const cartItems = document.getElementById('cart-items');
+const cartTotal = document.getElementById('cart-total');
+const cartCount = document.getElementById('cart-count');
+const cartLink = document.getElementById('cart-link');
+const closeCartBtn = document.getElementById('close-cart');
 const checkoutBtn = document.getElementById('checkout-btn');
+const orderModal = document.getElementById('order-modal');
+const closeModal = document.querySelector('.close-modal');
+const orderForm = document.getElementById('order-form');
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the application
     setupEventListeners();
     loadPlatos();
     checkAuthStatus();
     setupAdminPanel();
+    updateCartUI();
+    
+    // Initialize cart from localStorage
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        try {
+            cart = JSON.parse(savedCart);
+            updateCartUI();
+        } catch (e) {
+            console.error('Error loading cart from localStorage:', e);
+            localStorage.removeItem('cart');
+        }
+    }
 });
 
 function setupEventListeners() {
+    // Navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -36,35 +62,47 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById('order-btn').addEventListener('click', () => {
-        showSection('menu');
-    });
+    // Order button
+    const orderBtn = document.getElementById('order-btn');
+    if (orderBtn) {
+        orderBtn.addEventListener('click', () => showSection('menu'));
+    }
 
-    loginTab.addEventListener('click', () => switchAuthTab('login'));
-    registerTab.addEventListener('click', () => switchAuthTab('register'));
+    // Auth tabs
+    if (loginTab) loginTab.addEventListener('click', () => switchAuthTab('login'));
+    if (registerTab) registerTab.addEventListener('click', () => switchAuthTab('register'));
 
-    loginForm.addEventListener('submit', handleLogin);
-    registerForm.addEventListener('submit', handleRegister);
+    // Auth forms
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
+    if (registerForm) registerForm.addEventListener('submit', handleRegister);
     
+    // Logout link
     const logoutLink = document.getElementById('logout-link');
     if (logoutLink) {
         logoutLink.addEventListener('click', handleLogout);
     }
 
+    // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => filterPlatos(btn.dataset.type));
     });
 
-    document.querySelector('.close').addEventListener('click', () => {
-        cartModal.style.display = 'none';
+    // Cart and order related
+    if (closeCartBtn) closeCartBtn.addEventListener('click', () => cartSidebar.classList.remove('active'));
+    if (cartLink) cartLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        cartSidebar.classList.add('active');
     });
-
-    document.getElementById('cart-btn').addEventListener('click', () => {
-        cartModal.style.display = 'block';
-        updateCartUI();
+    if (closeModal) closeModal.addEventListener('click', () => orderModal.classList.remove('active'));
+    if (checkoutBtn) checkoutBtn.addEventListener('click', handleCheckout);
+    if (orderForm) orderForm.addEventListener('submit', handleOrderSubmit);
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === orderModal) {
+            orderModal.classList.remove('active');
+        }
     });
-
-    checkoutBtn.addEventListener('click', handleCheckout);
 }
 
 async function handleLogin(e) {
@@ -757,70 +795,87 @@ async function deletePedido(id) {
 }
 
 function addToCart(platoId) {
-    if (!currentUser) {
-        showMessage('Debe iniciar sesión para agregar al carrito', 'error');
-        showSection('login');
-        return;
-    }
-
     const plato = platos.find(p => p.id === platoId);
     if (!plato) return;
 
     const existingItem = cart.find(item => item.id === platoId);
     if (existingItem) {
-        existingItem.cantidad++;
+        existingItem.quantity += 1;
     } else {
-        cart.push({ id: platoId, cantidad: 1 });
+        cart.push({
+            id: plato.id,
+            nombre: plato.nombre,
+            precio: plato.precio,
+            imagen: plato.imagen || 'default-burger.jpg',
+            quantity: 1
+        });
     }
-
+    
+    saveCart();
     updateCartUI();
-    showMessage('Producto agregado al carrito', 'success');
+    showMessage(`${plato.nombre} agregado al carrito`, 'success');
+    
+    // Show cart sidebar when adding first item
+    if (cart.length === 1) {
+        cartSidebar.classList.add('active');
+    }
+}
+
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 function updateCartUI() {
+    // Update cart items
     cartItems.innerHTML = '';
     let total = 0;
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="empty-cart">Tu carrito está vacío</p>';
+        checkoutBtn.disabled = true;
+    } else {
+        cart.forEach(item => {
+            const plato = platos.find(p => p.id === item.id);
+            if (plato) {
+                const itemTotal = plato.precio * item.quantity;
+                total += itemTotal;
 
-    cart.forEach(item => {
-        const plato = platos.find(p => p.id === item.id);
-        if (plato) {
-            const itemTotal = plato.precio * item.cantidad;
-            total += itemTotal;
-
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.innerHTML = `
-                <div class="cart-item-info">
-                    <h4>${plato.nombre}</h4>
-                    <p>$${plato.precio} x ${item.cantidad}</p>
-                </div>
-                <div class="cart-item-controls">
-                    <button onclick="updateCartItemQuantity(${plato.id}, -1)">-</button>
-                    <span>${item.cantidad}</span>
-                    <button onclick="updateCartItemQuantity(${plato.id}, 1)">+</button>
-                </div>
-            `;
-            cartItems.appendChild(cartItem);
-        }
-    });
-
-    const totalDiv = document.createElement('div');
-    totalDiv.className = 'cart-total';
-    totalDiv.innerHTML = `<h3>Total: $${total}</h3>`;
-    cartItems.appendChild(totalDiv);
-
-    checkoutBtn.style.display = cart.length > 0 ? 'block' : 'none';
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <img src="${plato.imagen || 'default-burger.jpg'}" alt="${plato.nombre}">
+                    <div class="cart-item-info">
+                        <h4>${plato.nombre}</h4>
+                        <p>$${plato.precio} x ${item.quantity} = $${itemTotal}</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button onclick="updateCartItemQuantity(${plato.id}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateCartItemQuantity(${plato.id}, 1)">+</button>
+                        <button class="remove-item" onclick="removeFromCart(${plato.id})">&times;</button>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+            }
+        });
+    }
+    
+    // Update total and count
+    cartTotal.textContent = `$${total.toFixed(2)}`;
+    cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    checkoutBtn.disabled = cart.length === 0;
 }
 
 function updateCartItemQuantity(platoId, change) {
     const item = cart.find(item => item.id === platoId);
     if (!item) return;
 
-    item.cantidad += change;
-    if (item.cantidad <= 0) {
+    item.quantity += change;
+    if (item.quantity <= 0) {
         cart = cart.filter(item => item.id !== platoId);
     }
-
+    
+    saveCart();
     updateCartUI();
 }
 
@@ -831,36 +886,61 @@ async function handleCheckout() {
         return;
     }
 
+    // Show the order form modal
+    orderModal.classList.add('active');
+    cartSidebar.classList.remove('active');
+}
+
+async function handleOrderSubmit(e) {
+    e.preventDefault();
+    
+    if (cart.length === 0) {
+        showMessage('El carrito está vacío', 'error');
+        return;
+    }
+    
+    const orderData = {
+        nombre: document.getElementById('name').value,
+        telefono: document.getElementById('phone').value,
+        direccion: document.getElementById('address').value,
+        notas: document.getElementById('notes').value,
+        items: cart.map(item => ({
+            platoId: item.id,
+            cantidad: item.quantity,
+            precio: item.precio
+        })),
+        total: cart.reduce((sum, item) => sum + (item.precio * item.quantity), 0)
+    };
+    
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`${API_BASE_URL}/pedidos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': token ? `Bearer ${token}` : ''
             },
-            body: JSON.stringify({
-                platos: cart.map(item => ({
-                    id: item.id,
-                    cantidad: item.cantidad
-                }))
-            })
+            body: JSON.stringify(orderData)
         });
-
+        
         const data = await response.json();
-
+        
         if (!response.ok) {
-            showMessage(data.message, 'error');
-            return;
+            throw new Error(data.message || 'Error al realizar el pedido');
         }
-
+        
+        // Clear cart and form
         cart = [];
+        saveCart();
         updateCartUI();
-        cartModal.style.display = 'none';
-        showMessage('Pedido realizado con éxito', 'success');
-        showSection('pedidos');
-        loadPedidos();
+        orderForm.reset();
+        orderModal.classList.remove('active');
+        
+        showMessage('¡Pedido realizado con éxito!', 'success');
+        showSection('home');
+        
     } catch (error) {
-        showMessage('Error al procesar el pedido', 'error');
+        showMessage(error.message || 'Error al realizar el pedido', 'error');
     }
 }
 
