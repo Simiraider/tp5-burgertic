@@ -1,7 +1,7 @@
 const API_BASE_URL = 'http://localhost:9000';
 
 let currentUser = null;
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cart = [];
 let currentSection = 'home';
 let platos = [];
 
@@ -38,18 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthStatus();
     setupAdminPanel();
     updateCartUI();
-    
-    // Initialize cart from localStorage
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-        try {
-            cart = JSON.parse(savedCart);
-            updateCartUI();
-        } catch (e) {
-            console.error('Error loading cart from localStorage:', e);
-            localStorage.removeItem('cart');
-        }
-    }
+    // Limpiar carritos antiguos almacenados en localStorage
+    localStorage.removeItem('cart');
 });
 
 function setupEventListeners() {
@@ -206,12 +196,19 @@ function updateUIForUser() {
     const logoutNavItem = document.getElementById('logout-nav-item');
     
     if (currentUser) {
-        authNavItem.innerHTML = `<a href="#pedidos">Mis Pedidos</a>`;
+        authNavItem.innerHTML = `<a href="#pedidos" id="mis-pedidos-link">Mis Pedidos</a>`;
         logoutNavItem.style.display = 'block';
         if (currentUser.admin) {
             adminLink.style.display = 'block';
         } else {
             adminLink.style.display = 'none';
+        }
+        const misPedidosLink = document.getElementById('mis-pedidos-link');
+        if (misPedidosLink) {
+            misPedidosLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('pedidos');
+            });
         }
     } else {
         authNavItem.innerHTML = `<a href="#login">Iniciar Sesión</a>`;
@@ -240,6 +237,7 @@ async function loadPlatos() {
         const response = await fetch(`${API_BASE_URL}/platos`);
         platos = await response.json();
         displayPlatos(platos);
+        updateCartUI();
     } catch (error) {
         showMessage('Error al cargar los platos', 'error');
     }
@@ -469,18 +467,17 @@ async function loadPedidosAdmin() {
                             <td>${pedido.id}</td>
                             <td>${pedido.id_usuario}</td>
                             <td>${new Date(pedido.fecha).toLocaleDateString()}</td>
-                            <td>${pedido.estado}</td>
+                            <td>
+                                <select id="estado-select-${pedido.id}">
+                                    <option value="pendiente" ${pedido.estado === 'pendiente' ? 'selected' : ''}>pendiente</option>
+                                    <option value="aceptado" ${pedido.estado === 'aceptado' ? 'selected' : ''}>aceptado</option>
+                                    <option value="en camino" ${pedido.estado === 'en camino' ? 'selected' : ''}>en camino</option>
+                                    <option value="entregado" ${pedido.estado === 'entregado' ? 'selected' : ''}>entregado</option>
+                                </select>
+                            </td>
                             <td>${pedido.platos ? pedido.platos.length : 0} plato(s)</td>
                             <td>
-                                ${pedido.estado === 'pendiente' ? `
-                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'aceptar')" class="action-btn">Aceptar</button>
-                                ` : ''}
-                                ${pedido.estado === 'aceptado' ? `
-                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'comenzar')" class="action-btn">Comenzar</button>
-                                ` : ''}
-                                ${pedido.estado === 'en camino' ? `
-                                    <button onclick="cambiarEstadoPedido(${pedido.id}, 'entregar')" class="action-btn">Entregar</button>
-                                ` : ''}
+                                <button onclick="actualizarEstadoPedido(${pedido.id}, '${pedido.estado}')" class="action-btn">Confirmar</button>
                                 <button onclick="deletePedido(${pedido.id})" class="action-btn">Eliminar</button>
                             </td>
                         </tr>
@@ -507,6 +504,7 @@ function showCreatePlatoForm() {
                     <option value="principal">Principal</option>
                     <option value="combo">Combo</option>
                     <option value="postre">Postre</option>
+                    <option value="guarnicion">Guarnición</option>
                 </select>
                 <input type="number" name="precio" placeholder="Precio" required>
                 <textarea name="descripcion" placeholder="Descripción" required></textarea>
@@ -587,6 +585,7 @@ async function editPlato(id) {
                     <option value="principal" ${plato.tipo === 'principal' ? 'selected' : ''}>Principal</option>
                     <option value="combo" ${plato.tipo === 'combo' ? 'selected' : ''}>Combo</option>
                     <option value="postre" ${plato.tipo === 'postre' ? 'selected' : ''}>Postre</option>
+                    <option value="guarnicion" ${plato.tipo === 'guarnicion' ? 'selected' : ''}>Guarnición</option>
                 </select>
                 <input type="number" name="precio" value="${plato.precio}" required>
                 <textarea name="descripcion" required>${plato.descripcion}</textarea>
@@ -822,7 +821,7 @@ function addToCart(platoId) {
 }
 
 function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    // El carrito se mantiene solo en memoria durante la sesión
 }
 
 function updateCartUI() {
@@ -886,6 +885,11 @@ async function handleCheckout() {
         return;
     }
 
+    if (cart.length === 0) {
+        showMessage('El carrito está vacío', 'error');
+        return;
+    }
+
     // Show the order form modal
     orderModal.classList.add('active');
     cartSidebar.classList.remove('active');
@@ -904,12 +908,14 @@ async function handleOrderSubmit(e) {
         telefono: document.getElementById('phone').value,
         direccion: document.getElementById('address').value,
         notas: document.getElementById('notes').value,
-        items: cart.map(item => ({
-            platoId: item.id,
-            cantidad: item.quantity,
-            precio: item.precio
+        platos: cart.map(item => ({
+            id: item.id,
+            cantidad: item.quantity
         })),
-        total: cart.reduce((sum, item) => sum + (item.precio * item.quantity), 0)
+        total: cart.reduce((sum, item) => {
+            const plato = platos.find(p => p.id === item.id);
+            return sum + ((plato ? plato.precio : 0) * item.quantity);
+        }, 0)
     };
     
     try {

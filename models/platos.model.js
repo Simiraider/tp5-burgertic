@@ -12,7 +12,7 @@ export const platoSchema = {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            isIn: [['principal', 'combo', 'postre']]
+            isIn: [['principal', 'combo', 'postre', 'guarnicion']]
         }
     },
     nombre: {

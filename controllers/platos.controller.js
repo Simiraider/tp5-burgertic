@@ -81,7 +81,7 @@ const getPlatosByTipo = async (req, res) => {
 
     if (!tipo) return res.status(400).json({ message: "Se necesita un tipo" });
 
-    if (tipo !== "principal" && tipo !== "combo" && tipo !== "postre")
+    if (tipo !== "principal" && tipo !== "combo" && tipo !== "postre" && tipo !== "guarnicion")
         return res.status(400).json({ message: "Tipo no válido" });
 
     try {

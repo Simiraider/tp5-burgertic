@@ -13,7 +13,8 @@ const getPedidos = async () => {
     const pedidos = await Pedido.findAll({
         include: [
             { 
-                model: Plato, 
+                model: Plato,
+                as: 'platos',
                 through: { attributes: ['cantidad'] },
                 attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
             }
@@ -35,7 +36,8 @@ const getPedidoById = async (id) => {
     const pedido = await Pedido.findByPk(id, {
         include: [
             { 
-                model: Plato, 
+                model: Plato,
+                as: 'platos',
                 through: { attributes: ['cantidad'] },
                 attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
             }
@@ -57,7 +59,8 @@ const getPedidosByUser = async (idUsuario) => {
         where: { id_usuario: idUsuario },
         include: [
             { 
-                model: Plato, 
+                model: Plato,
+                as: 'platos',
                 through: { attributes: ['cantidad'] },
                 attributes: ['id', 'nombre', 'precio', 'descripcion', 'tipo']
             }
@@ -69,7 +72,7 @@ const getPedidosByUser = async (idUsuario) => {
             id: plato.id,
             nombre: plato.nombre,
             precio: plato.precio,
-            cantidad: plato.platosXPedidos?.cantidad || plato.platosxpedidos?.cantidad || 1
+            cantidad: plato.platosXpedidos?.cantidad || plato.platosxpedidos?.cantidad || 1
         }));
         return pedidoJson;
     });
